@@ -1,27 +1,258 @@
-export { future as theme } from "mdx-deck/themes";
+export { yellow as theme } from 'mdx-deck/themes';
+import { Image, Appear } from 'mdx-deck';
+import CodeBlock from './CodeBlock';
 
 ## Comment je teste une application React ?
 
 ---
 
-# Outillage
+## Première étape
+
+Trouver un runner
 
 ---
+
+<Image src="./jest-logo.png" height="200px" width="200px" />
 
 ## Jest
 
 ---
 
-# Quelle lib pour React ?
+### 1 - Zero config
+
+- Watch mode interactif et rapide
+- Librairie d'assertion
+- Nom des fichiers
+- Asynchronisme (`async/await`)
 
 ---
 
-## React Test Utils
+### 2 - Snapshots
+
+Fait une capture du résultat
+
+```js
+it('should match snapshot', () => {
+  expect(myLegacyResult).toMatchSnapshot();
+});
+```
 
 ---
 
-## Enzyme
+### 3 - JSDOM
+
+- Embarque un browser en mémoire (avec ses API)
+- Permet de tester en rendu DOM
+- Désactivable pour une cible NodeJS
 
 ---
 
-## React Testing Library
+### 4 - Mocking
+
+- Possibilité de mocker tout ou partie d'un module
+
+```js
+jest.mock('imported-module');
+jest.mock('./my-module');
+```
+
+- Mocking par défaut possible (`__mocks__`)
+- Assertions sur les mocks
+
+---
+
+## Deuxième étape
+
+Quelle lib pour tester mon code React ?
+
+---
+
+### Différentes possibilités
+
+<ul style={{ listStyleType: 'none' }}>
+  <Appear>
+    <li>React Test Utils</li>
+    <li>React test renderer</li>
+    <li>Enzyme</li>
+    <li>react-testing-library</li>
+  </Appear>
+</ul>
+
+---
+
+### React Test Utils
+
+<Appear>
+  <Image src="./react-test-utils.png" height="600px" width="1163px" />
+</Appear>
+
+---
+
+### React test renderer
+
+<Appear>
+  <Image src="./react-test-renderer.png" height="200px" width="1163px" />
+</Appear>
+
+---
+
+### Enzyme
+
+- Solution proposée par Airbnb
+- Propose une API très riche
+- Une des plus utilisées dans la communauté
+
+---
+
+### Enzyme
+
+Deux façons de tester
+
+- Shallow
+- Mount
+
+---
+
+### Enzyme - Shallow
+
+- Composant en isolation
+- Tous les éléments enfants sont des `div`
+- Tests proches de l'implémentation
+
+---
+
+### Enzyme - Mount
+
+- Composant rendu avec ses enfants
+- DOM nécessaire
+
+---
+
+### Enzyme - Qualités
+
+- API avec de nombreux utilitaires (`find`, `props`, `state`)
+- Grosse communauté
+- Documentation avec de nombreux exemples
+
+---
+
+### Enzyme - Défauts
+
+Trop proche de l'implémentation
+
+<Image src="./enzyme-mount.png" width="1163px" height="531px" />
+
+---
+
+### Enzyme - Défauts
+
+Simulations d'événements  
+Ce ne sont pas des vrais événements DOM (SyntheticEvents)
+
+<Image src="./Simulate-Dan-tweet.png" height="531px" width="807px" />
+
+---
+
+### 🐐 react-testing-library
+
+---
+
+### 🐐 react-testing-library - Philosophie
+
+<Image src="./react-testing-library.png" height="307px" width="807px" />
+
+---
+
+### 🐐 react-testing-library - Philosophie
+
+- Pas de Shallow
+- Nécessite un DOM
+- Rend le composant entier dans un container (`div` par défaut)
+
+---
+
+### 🐐 react-testing-library - Qualités
+
+- Tests proches de l'utilisation réelle
+- Vrais événements DOM
+- API simple
+
+---
+
+### 🐐 react-testing-library - Défauts
+
+- API trop simple ?
+- Obligation de tests d'intégrations (Redux, Router, etc.)
+- Passage par des API DOM parfois
+
+---
+
+### 🐐 react-testing-library - Pourquoi ?
+
+Force à être proche de l'utilisation
+
+`getByText`, `getByTitle`, `getByAltText`, etc.
+
+=> Pousse à faire du code accessible (a11y)
+
+---
+
+### 🐐 react-testing-library - Pourquoi ?
+
+Tests qui correspondent au vrai comportement
+
+Pousse à intégrer réellement le composant dans Redux, dans le routeur notamment
+
+```js
+test('can render with redux with custom initial state', () => {
+  const { getByTestId, getByText } = renderWithRedux(<ConnectedCounter />, {
+    initialState: { count: 3 }
+  });
+  fireEvent.click(getByText('-'));
+  expect(getByTestId('count-value').textContent).toBe('2');
+});
+```
+
+---
+
+### 🐐 react-testing-library - Pourquoi ?
+
+Supporte les actions asynchrones (appels API au chargement par exemple)
+
+```js
+it('increments count', async () => {
+  // Render new instance in every test to prevent leaking state
+  const { getByText } = renderComponent({ count: 5 });
+
+  // It takes time for the button to appear because
+  // the GET request has a slight delay
+  await waitForElement(() => getByText('+1'));
+  fireEvent.click(getByText('+1'));
+
+  // The counter doesn't update immediately because
+  // the POST request is asynchronous
+  await waitForElement(() => getByText(/clicked 6 times/i));
+});
+```
+
+---
+
+## Comment je teste une application React ?
+
+<ul style={{ listStyleType: 'none' }}>
+  <Appear>
+    <li>
+      Utilisation de <CodeBlock>Jest</CodeBlock>
+    </li>
+    <li>Tests unitaires des méthodes utilitaires et de Redux</li>
+    <li>
+      Tests d'intégration des composants avec{' '}
+      <CodeBlock>react-testing-library</CodeBlock> (plus plugins)
+    </li>
+    <li>Seules les réponses des API sont mockées</li>
+  </Appear>
+</ul>
+
+---
+
+## Merci

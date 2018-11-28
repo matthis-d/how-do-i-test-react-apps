@@ -26,5 +26,7 @@
   "devDependencies": {
     "mdx-deck": "^1.7.10"
   },
-  "dependencies": {}
+  "dependencies": {
+    "grid-styled": "^5.0.2"
+  }
 }
